@@ -22,6 +22,9 @@
               attrs="{'invisible': [('state', '!=', 'pending')]}"
               groups="employee_exit_management.group_manager_resignation"
           />
+          <button string="Send Signatory" name="send_signatory" type="object" class="oe_highlight" 
+            attrs="{'invisible': [('state', '!=', 'approve')]}"
+           />
         </header>
         <sheet>
           <group>
@@ -33,14 +36,7 @@
               <h4> Reason for rejecting your request </h4>
               <field name="reason_disapprove"/>
             </div>
-            <group attrs="{'invisible': [('state', '!=', 'approve')]}" >
-              <span> Instruction: Download The signatory template </span>
-              <span> Fill the blank accordingly </span>
-              <field name="resignatory_template"/>
-              <span> Upload your signatory for exit clearance </span>
-              <field name="resignatory_letter"/>
-            </group>
-          
+            
           </group>
             <notebook>
               <page string="Resignation Letter" height="550">
@@ -84,6 +80,73 @@
     </field>
   </record>
 
+  <!-- clearance.signatory form view -->
+  <record id="clearance_signatoru_view_form" model="ir.ui.view">
+    <field name="name">clearance.signatory.view.form</field>
+    <field name="model">clearance.signatory</field>
+    <field name="arch" type="xml">
+      <form string="Clearance">
+        <header>
+            <field name="state" widget="statusbar" statusbar_visible="draft,sent" statusbar_colors='{"confirmed":"blue"}'/> 
+            <button string="Submit" name="submit" type="object" class="oe_highlight" 
+              attrs="{'invisible': [('state', '!=', 'draft')]}"
+            />
+            <button string="Set to Pending" name="pending" type="object" class="oe_highlight"
+                attrs="{'invisible': [('state', '!=', 'sent')]}"
+                groups="employee_exit_management.group_manager_resignation"
+            />
+            <button string="Approve" name="approve" type="object" class="oe_highlight"
+                attrs="{'invisible': [('state', '!=', 'pending')]}"
+                groups="employee_exit_management.group_manager_resignation"
+            />
+            <button string="Disapprove" name="disapprove" type="object" class="oe_highlight"
+                attrs="{'invisible': [('state', '!=', 'pending')]}"
+                groups="employee_exit_management.group_manager_resignation"
+            />
+          </header>
+        <sheet>
+          <group>
+            <field name="employee_id"/>
+          </group>
+          <group>
+              <group>
+                <span> <strong>Instruction</strong>:<br /> Download The signatory template <br /> Fill the blank accordingly </span>
+                <field name="signatory_template"/>
+              </group>
+              <group>
+              <span> Upload your signatory for exit clearance </span>
+              <field name="signatory_letter"/>
+              </group>
+            </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- clearance.signatory tree view -->
+  <record id="clearance_signatory_view_tree" model="ir.ui.view">
+    <field name="name">clearance.signatory.view.tree</field>
+    <field name="model">clearance.signatory</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="employee_id"/>
+        <field name="signatory_letter"/>
+        <field name="state"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="clearance_signatory_action" model="ir.actions.act_window">
+    <field name="name">Clearance Signatory</field>
+    <field name="res_model">clearance.signatory</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[
+      '|',
+      ('employee_id.user_id', '=', uid),
+      ('employee_id.parent_id.user_id', '=', uid)
+    ]</field>
+  </record>
+
   <menuitem
     id="resignations_menu"
     name="Resignation"
@@ -102,6 +165,14 @@
     id="manager_resignation_menu"
     name="Resignation Sent"
     action="resignation_letter_manager_action"
+    parent="resignations_menu"
+    groups=""
+    sequence="1"/>
+
+    <menuitem
+    id="signatory_menu"
+    name="Signatories"
+    action="clearance_signatory_action"
     parent="resignations_menu"
     groups=""
     sequence="1"/>
