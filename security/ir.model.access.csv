@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+id_resignation_letter,name_resignation_letter,model_resignation_letter,base.group_user,1,1,1,1
+id_hr_job,name_hr_job,model_hr_job,base.group_user,1,1,1,1

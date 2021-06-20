@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="module_category_resignation" model="ir.module.category">
+        <field name="name">Resignation Management</field>
+        <field name="description">Category for Resignation</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record model="res.groups" id="group_employee_resignation">
+        <field name="name">Employee</field>
+        <field name="category_id" ref="module_category_resignation" />
+    </record>
+
+    <record model="res.groups" id="group_manager_resignation">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_resignation" />
+        <field name="implied_ids" eval="[(4, ref('group_employee_resignation'))]"/>
+    </record>
+
+</odoo>

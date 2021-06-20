@@ -1,0 +1,157 @@
+<odoo>
+
+  <record id="resignation_letter_form" model="ir.ui.view">
+    <field name="name">resignation.letter.form</field>
+    <field name="model">resignation.letter</field>
+    <field name="arch" type="xml">
+      <form string="Resignation letter">
+        <header>
+          <field name="state" widget="statusbar" statusbar_visible="draft,sent" statusbar_colors='{"confirmed":"blue"}'/> 
+          <button string="Send To Manager" name="send_to_manager" type="object" class="oe_highlight" 
+            attrs="{'invisible': [('state', '!=', 'draft')]}"
+           />
+          <button string="Set to Pending" name="pending" type="object" class="oe_highlight"
+              attrs="{'invisible': [('state', '!=', 'sent')]}"
+              groups="employee_exit_management.group_manager_resignation"
+          />
+          <button string="Approve" name="approve" type="object" class="oe_highlight"
+              attrs="{'invisible': [('state', '!=', 'pending')]}"
+              groups="employee_exit_management.group_manager_resignation"
+          />
+          <button string="Disapprove" name="disapprove" type="object" class="oe_highlight"
+              attrs="{'invisible': [('state', '!=', 'pending')]}"
+              groups="employee_exit_management.group_manager_resignation"
+          />
+        </header>
+        <sheet>
+          <group>
+            <group>
+              <field name="employee_id"/>
+              <field name="date"/>
+            </group>
+            <div attrs="{'invisible': [('state', '!=', 'disapprove')]}" >
+              <h4> Reason for rejecting your request </h4>
+              <field name="reason_disapprove"/>
+            </div>
+            <group attrs="{'invisible': [('state', '!=', 'approve')]}" >
+              <span> Instruction: Download The signatory template </span>
+              <span> Fill the blank accordingly </span>
+              <field name="resignatory_template"/>
+              <span> Upload your signatory for exit clearance </span>
+              <field name="resignatory_letter"/>
+            </group>
+          
+          </group>
+            <notebook>
+              <page string="Resignation Letter" height="550">
+                <field name="description" style="" height="550"/>
+              </page>
+            </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- resignation.letter tree view -->
+  <record id="resignation_letter_view_tree" model="ir.ui.view">
+    <field name="name">resignation.letter.view.tree</field>
+    <field name="model">resignation.letter</field>
+    <field name="arch" type="xml">
+      <tree default_order='write_date desc'>
+        <field name="employee_id"/>
+        <field name="date"/>
+        <field name="state" string="Status"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="resignation_letter_action" model="ir.actions.act_window">
+    <field name="name">Draft</field>
+    <field name="res_model">resignation.letter</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[('state', '=', 'draft'), ('employee_id.user_id', '=', uid)] </field>
+  </record>
+
+  <record id="resignation_letter_manager_action" model="ir.actions.act_window">
+    <field name="name">Resignation Sent</field>
+    <field name="res_model">resignation.letter</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[
+      ('state', 'not in', ['draft', 'cancel']),
+      '|',
+      ('employee_id.user_id', '=', uid),
+      ('employee_id.parent_id.user_id', '=', uid)]
+    </field>
+  </record>
+
+  <menuitem
+    id="resignations_menu"
+    name="Resignation"
+    parent="hr.menu_hr_root"
+    sequence="-1"/>
+    
+  <menuitem
+    id="draft_resignation_menu"
+    name="Draft"
+    action="resignation_letter_action"
+    parent="resignations_menu"
+    groups=""
+    sequence="1"/>
+
+    <menuitem
+    id="manager_resignation_menu"
+    name="Resignation Sent"
+    action="resignation_letter_manager_action"
+    parent="resignations_menu"
+    groups=""
+    sequence="1"/>
+
+
+    <!-- modal -->
+  <!-- modal.reason form view -->
+  <record id="modal_reason_view_form" model="ir.ui.view">
+    <field name="name">modal.reason.view.form</field>
+    <field name="model">modal.reason</field>
+    <field name="arch" type="xml">
+      <form string="Reason">
+        <sheet>
+          <group>
+            <field name="reason"/>
+          </group>
+        </sheet>
+        <footer>
+          <button name="disapprove" type="object" string="Confirm"/>
+          <button name="cancel" type="object" string="Cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="modal_reason_action" model="ir.actions.act_window">
+    <field name="name">Reason</field>
+    <field name="res_model">modal.reason</field>
+    <field name="view_mode">form</field>
+  </record>
+
+
+  <record id="inherit_hr_job_form_view" model="ir.ui.view">
+    <field name="name">HR Job Form</field>
+    <field name="model">hr.job</field>
+    <field name="inherit_id" ref="hr.view_hr_job_form" />
+    <field name="arch" type="xml">
+      <!-- <xpath expr="//field[@name='no_of_recruitment']" position="after"> -->
+      <xpath expr="//group/group" position="after">
+        <group>
+          <span> Upload Signatory Template (.pdf, .docx, .doc) </span>
+          <field name="signatory_files"/>
+        </group>
+    </xpath>
+    </field>
+  </record>
+
+    
+
+</odoo>
+
+
+
