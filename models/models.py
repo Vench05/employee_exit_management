@@ -77,7 +77,18 @@ class ResignationLetter(models.Model):
             'target': 'new',
         }
 
-    
+    def send_signatory(self):
+        clearance = self.env['clearance.signatory'].search([
+            ('employee_id', '=', self.employee_id.id)
+        ], limit=1, order='id desc')
+        action = self.env.ref('employee_exit_management.clearance_signatory_action')
+        return {
+            'res_id': clearance.id,
+            'name': action.name,
+            'type': action.type,
+            'res_model': action.res_model,
+            'view_mode': 'form',
+        }
         
 
 

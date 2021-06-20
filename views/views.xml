@@ -128,7 +128,7 @@
     <field name="name">clearance.signatory.view.tree</field>
     <field name="model">clearance.signatory</field>
     <field name="arch" type="xml">
-      <tree>
+      <tree default_order='create_date desc'>
         <field name="employee_id"/>
         <field name="signatory_letter"/>
         <field name="state"/>
